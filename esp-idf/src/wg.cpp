@@ -159,6 +159,27 @@ static void wgCliCmd(const char* args) {
 /* Module config version. Bump when adding/changing defaults. See duckdns.cpp. */
 #define WG_VERSION 1
 
+#if CONFIG_DIPTYCH_LCD
+#include "lcd.h"
+/* On-device Settings → Net → WireGuard pane. Mirrors the browser WireGuardPanel
+ * (the private key stays device-only; we show the public key + a Generate key
+ * action that triggers wg.keygen, same as the browser button). */
+static void wgSettingsPane(void* arg) {
+    lv_obj_t* p = static_cast<lv_obj_t*>(arg);
+    lcdSettingSection(p, "Our Side");
+    lcdSettingSwitch (p, "Enable",      "s.wg.enable");
+    lcdSettingText   (p, "Address",     "s.wg.address");
+    lcdSettingText   (p, "Netmask",     "s.wg.netmask");
+    lcdSettingText   (p, "DNS",         "s.wg.dns");
+    lcdSettingSlider (p, "Keepalive",   "s.wg.keepalive", 0, 300);
+    lcdSettingValue  (p, "Public key",  "s.wg.pubkey");
+    lcdSettingButton (p, "Generate key", [](void*) { storageSet("wg.keygen", 1); });
+    lcdSettingSection(p, "Other Side");
+    lcdSettingText   (p, "Endpoint",     "s.wg.endpoint");
+    lcdSettingText   (p, "Peer pub key", "s.wg.peer_pubkey");
+}
+#endif
+
 void wgInit() {
     int v = storageGetInt("s.wg.version", 0);
     if (v < WG_VERSION) {
@@ -175,6 +196,10 @@ void wgInit() {
         storageDefault("secrets.wg.key", "");
         storageSet("s.wg.version", WG_VERSION);
     }
+
+#if CONFIG_DIPTYCH_LCD
+    lcdRegisterSettings("Net/WireGuard", "WireGuard", wgSettingsPane);
+#endif
 
     netRegister(NET_EV_UPSTREAM_UP,   wgOnUp);
     netRegister(NET_EV_UPSTREAM_DOWN, wgOnDown);
