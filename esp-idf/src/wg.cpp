@@ -159,7 +159,7 @@ static void wgCliCmd(const char* args) {
 /* Module config version. Bump when adding/changing defaults. See duckdns.cpp. */
 #define WG_VERSION 1
 
-#if CONFIG_DIPTYCH_LCD
+#if CONFIG_SPANGAP_LCD
 #include "lcd.h"
 /* On-device Settings → Net → WireGuard pane. Mirrors the browser WireGuardPanel
  * (the private key stays device-only; we show the public key + a Generate key
@@ -197,7 +197,7 @@ void wgInit() {
         storageSet("s.wg.version", WG_VERSION);
     }
 
-#if CONFIG_DIPTYCH_LCD
+#if CONFIG_SPANGAP_LCD
     lcdRegisterSettings("Net/WireGuard", "WireGuard", wgSettingsPane);
 #endif
 

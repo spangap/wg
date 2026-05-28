@@ -1,0 +1,13 @@
+# wg — WireGuard tunnel for spangap.
+#
+# Vendors trombik/esp_wireguard with the IDF 5.x netif->state PPP workaround
+# (drops out once upstream propagates).
+schema_version: 1
+name: spangap/wg
+prefix: wg
+version: 0.1.0
+firmware: esp-idf
+browser: browser
+platforms: [idf]
+requires:
+  - spangap/spangap-net
