@@ -12,14 +12,13 @@ set(WG_SRCS
     "src/esp_wireguard/crypto/refc/x25519.c"
     "src/esp_wireguard/nacl/crypto_scalarmult/curve25519/ref/smult.c")
 
+include(${CMAKE_CURRENT_LIST_DIR}/spangap_requires.cmake)
 idf_component_register(
     SRCS ${WG_SRCS}
     INCLUDE_DIRS "include"
     PRIV_INCLUDE_DIRS "src/esp_wireguard"
     REQUIRES
-        spangap-core
-        spangap-net
-        spangap-lcd
+        ${SPANGAP_REQUIRES}
         driver
         esp_event
         esp_netif
