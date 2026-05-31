@@ -15,3 +15,10 @@ optional_requires:
   # wg.cpp registers a Settings pane via lcdSetting* helpers,
   # gated on CONFIG_SPANGAP_LCD.
   - spangap/spangap-lcd
+# Auto-init: spangap-inside folds this into the buildable's generated
+# spangapInitStraddles() dispatcher, so wg comes up with no consumer main.cpp
+# edit. wgInit() only registers net-event callbacks + a CLI verb + storage
+# defaults (and an LCD settings pane when lcd is staged) — order-independent
+# once net/storage/cli are up, all true at the dispatcher's call site.
+init:
+  - call: wgInit
