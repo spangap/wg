@@ -34,7 +34,7 @@ covering your management network to use it only for management.
 ## Crypto
 
 `esp_wireguard/crypto.c` includes a software Curve25519 (MIT, Mike
-Hamburg / Cryptography Research). [reticulous-core](../../r/reticulous-core)
+Hamburg / Cryptography Research). [rns](../rns)
 re-vendors the same Curve25519 implementation into its microreticulum
 fork so RNS opportunistic SINGLE packets can do X25519 ECDH at sub-10 ms
 per scalar mult instead of ~100 ms on the bare mbedTLS path.

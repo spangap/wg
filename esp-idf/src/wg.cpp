@@ -144,8 +144,14 @@ static void wgOnPoll(const char*) {
 /* ---- Public API ---- */
 
 static void wgCliCmd(const char* args) {
-    if (strcmp(args, "help") == 0) { cliPrintf("  %-*s WireGuard tunnel\n", CLI_HELP_COL, "wg [up|down|keygen]"); return; }
-    if (!*args || strcmp(args, "status") == 0) {
+    if (strcmp(args, "help") == 0) { cliPrintf("%-*s WireGuard status; up/down/keygen\n", CLI_HELP_COL, "wg [up|down|keygen]"); return; }
+    if (cliWantsHelp(args)) {
+        cliPrintf("%-*s show tunnel status\n", CLI_HELP_COL, "wg");
+        cliPrintf("%-*s enable / disable the tunnel\n", CLI_HELP_COL, "wg up|down");
+        cliPrintf("%-*s generate a new private key\n", CLI_HELP_COL, "wg keygen");
+        return;
+    }
+    if (!*args) {
         wgStatus([](const char* d, size_t l) { cliPrintf("%.*s", (int)l, d); });
     } else if (strcmp(args, "keygen") == 0) {
         wgGenKey([](const char* d, size_t l) { cliPrintf("%.*s", (int)l, d); });
@@ -241,24 +247,24 @@ static bool derivePubKey(const char* privKeyB64, char* pubKeyB64, size_t pubKeyB
 
 void wgStatus(cli_write_fn write) {
     char buf[128];
-    int n = snprintf(buf, sizeof(buf), "  wg: %s\n", tunnelUp ? "UP" : "DOWN");
+    int n = snprintf(buf, sizeof(buf), "wg: %s\n", tunnelUp ? "UP" : "DOWN");
     if (n > 0) write(buf, (size_t)n);
     char pk[48];
     storageGetStr("secrets.wg.key", pk, sizeof(pk));
     if (pk[0]) {
         char pub[48];
         if (derivePubKey(pk, pub, sizeof(pub))) {
-            n = snprintf(buf, sizeof(buf), "  public key: %s\n", pub);
+            n = snprintf(buf, sizeof(buf), "public key: %s\n", pub);
             if (n > 0) write(buf, (size_t)n);
         }
     }
     if (tunnelUp) {
         bool peerUp = (esp_wireguardif_peer_is_up(&wgCtx) == ESP_OK);
-        n = snprintf(buf, sizeof(buf), "  peer: %s\n", peerUp ? "connected" : "handshaking");
+        n = snprintf(buf, sizeof(buf), "peer: %s\n", peerUp ? "connected" : "handshaking");
         if (n > 0) write(buf, (size_t)n);
-        n = snprintf(buf, sizeof(buf), "  address: %s/%s\n", address, netmask);
+        n = snprintf(buf, sizeof(buf), "address: %s/%s\n", address, netmask);
         if (n > 0) write(buf, (size_t)n);
-        n = snprintf(buf, sizeof(buf), "  endpoint: %s:%d\n", endpointHost, endpointPort);
+        n = snprintf(buf, sizeof(buf), "endpoint: %s:%d\n", endpointHost, endpointPort);
         if (n > 0) write(buf, (size_t)n);
     }
 }

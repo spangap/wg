@@ -29,7 +29,7 @@ wg/
             ├── wireguardif.{c,h}
             ├── wireguard-platform.{c,h}
             └── crypto.{c,h}       includes a software Curve25519
-                                   (the same X25519 reused by reticulous-core)
+                                   (the same X25519 reused by rns)
 ```
 
 Browser settings panel: server pubkey, allowed-IPs, endpoint, our
@@ -66,7 +66,7 @@ does, this straddle will drop the vendor and depend on the registry
 component.
 
 The software Curve25519 in `esp_wireguard/crypto.c` is also re-used by
-[reticulous-core](../../r/reticulous-core)'s microreticulum fork (X25519
+[rns](../rns)'s microreticulum fork (X25519
 ECDH for RNS) — keeping the vendor here means both straddles share one
 constant-time impl rather than each carrying their own.
 
