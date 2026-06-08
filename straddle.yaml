@@ -20,3 +20,10 @@ init:
   - call: wgInit
   - call: wgLcdRegister
     when: spangap/spangap-lcd
+# Browser auto-registration: the browser-half parallel to init:. When a
+# buildable with a browser half stages wg, spangap-inside imports registerWg
+# from wg/modules/wg into the generated straddles.gen.ts and injects the
+# file: dep — so the WireGuard pane appears under Settings → Network with no
+# consumer edit. Mirrors how wgInit() rides the firmware dispatcher.
+browser_register:
+  - call: registerWg

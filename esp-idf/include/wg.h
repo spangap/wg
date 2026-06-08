@@ -2,8 +2,8 @@
  * WireGuard VPN — tunnel lifecycle via net event callbacks.
  * Not a task — runs on net's task context when events fire.
  */
-#ifndef SECCAM_WG_H
-#define SECCAM_WG_H
+#ifndef SPANGAP_WG_H
+#define SPANGAP_WG_H
 
 #include "storage.h"  /* cli_write_fn */
 
