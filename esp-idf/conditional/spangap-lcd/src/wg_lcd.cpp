@@ -31,5 +31,5 @@ static void wgSettingsPane(void* arg) {
  * (spangap/spangap-lcd). Plain C++ linkage to match the generated dispatcher's
  * forward decl. */
 void wgLcdRegister(void) {
-    lcdRegisterSettings("Net/WireGuard", "WireGuard", wgSettingsPane);
+    lcdRegisterSettings("Internet/WireGuard", "WireGuard", wgSettingsPane);
 }
