@@ -11,6 +11,7 @@
 #include <esp_log.h>
 
 #include "crypto.h"
+#include "mem.h"
 
 #define ENTROPY_MINIMUM_REQUIRED_THRESHOLD	(134)
 #define ENTROPY_FUNCTION_DATA	NULL
@@ -19,7 +20,7 @@
 #define TAG "wireguard-platform"
 
 static struct mbedtls_ctr_drbg_context random_context;
-static struct mbedtls_entropy_context entropy_context;
+PSRAM_BSS static struct mbedtls_entropy_context entropy_context;
 
 static int entropy_hw_random_source( void *data, unsigned char *output, size_t len, size_t *olen ) {
 	esp_fill_random(output, len);
