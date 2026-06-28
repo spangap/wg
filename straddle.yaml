@@ -18,8 +18,6 @@ requires:
 # cli/lcd are up by the time the straddle band runs.
 init:
   - call: wgInit
-  - call: wgLcdRegister
-    when: spangap/spangap-lcd
 # Browser auto-registration: the browser-half parallel to init:. When a
 # buildable with a browser half stages wg, spangap-inside imports registerWg
 # from wg/modules/wg into the generated straddles.gen.ts and injects the
@@ -27,3 +25,25 @@ init:
 # consumer edit. Mirrors how wgInit() rides the firmware dispatcher.
 browser_register:
   - call: registerWg
+
+# Declarative settings: LCD pane generated from this block. web: false — the
+# WireGuardPanel.vue (pubkey copy button, private-key-present indicator) keeps
+# owning the web leaf. No row carries a default: the private key lives in
+# secrets.wg.key (seeded in wg.cpp); the s.wg.* keys use read-site fallbacks.
+settings:
+  - menu:
+      - { id: network, label: "Internet", placement: 2 }
+      - { id: wireguard, label: "WireGuard" }
+    web: false
+    rows:
+      - section: "Our Side"
+      - switch: { label: "Enable", key: "s.wg.enable" }
+      - text:   { label: "Address", key: "s.wg.address" }
+      - text:   { label: "Netmask", key: "s.wg.netmask" }
+      - text:   { label: "DNS", key: "s.wg.dns" }
+      - slider: { label: "Keepalive", key: "s.wg.keepalive", min: 0, max: 300 }
+      - value:  { label: "Public key", key: "s.wg.pubkey" }
+      - button: { label: "Generate key", cmd: "wg.keygen", payload: "1" }
+      - section: "Other Side"
+      - text:   { label: "Endpoint", key: "s.wg.endpoint" }
+      - text:   { label: "Peer pub key", key: "s.wg.peer_pubkey" }
