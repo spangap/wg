@@ -14,8 +14,8 @@ set(WG_SRCS
 
 include(${CMAKE_CURRENT_LIST_DIR}/spangap_requires.cmake)
 # Conditional sources: esp-idf/conditional/<name>/ is compiled only when <name>
-# is staged. The on-device WireGuard settings pane lives in conditional/
-# spangap-lcd/ and registers via the when:-gated wgLcdRegister hook — no #if.
+# is staged. The on-device WireGuard settings pane is declarative (generated
+# from the settings: block in straddle.yaml), so there is no hand-written LCD slice.
 idf_component_register(
     SRCS ${WG_SRCS} ${SPANGAP_CONDITIONAL_SRCS}
     INCLUDE_DIRS "include" ${SPANGAP_CONDITIONAL_INCLUDE_DIRS}
