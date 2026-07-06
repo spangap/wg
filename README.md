@@ -95,7 +95,6 @@ below are seeded by `wgInit` and read by `wg.cpp`.
 | `s.wg.endpoint` | `""` | Server host or `host:port`. Required. Port defaults to `51820` when omitted. |
 | `s.wg.peer_pubkey` | `""` | The server's base64 public key. Required. |
 | `s.wg.keepalive` | `25` | Persistent-keepalive interval in seconds (`0` = off). |
-| `s.wg.dns` | `""` | **Not implemented.** Declared and shown in the panels, but `wg.cpp` never reads it; setting it has no effect. |
 
 ### Published / derived (read-only to the operator)
 
