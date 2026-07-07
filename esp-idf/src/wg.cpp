@@ -165,7 +165,7 @@ static void wgCliCmd(const char* args) {
 /* Module config version. Bump when adding/changing defaults. See duckdns.cpp. */
 #define WG_VERSION 1
 
-void wgInit() {
+void WgService::onInit() {
     int v = storageGetInt("s.wg.version", 0);
     if (v < WG_VERSION) {
         storageDefaultTree("s.wg", R"({

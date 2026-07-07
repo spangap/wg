@@ -6,9 +6,13 @@
 #define SPANGAP_WG_H
 
 #include "storage.h"  /* cli_write_fn */
+#include "service.h"
 
-/** Register WG callbacks with net. Call from main after netInit(). */
-void wgInit();
+/** WireGuard VPN service — registers net callbacks + CLI at boot. */
+class WgService : public Service {
+public:
+    void onInit() override;
+};
 
 /** Returns true if WireGuard tunnel is established. */
 bool wgIsUp();
