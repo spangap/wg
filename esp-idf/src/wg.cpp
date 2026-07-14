@@ -168,6 +168,7 @@ static void wgCliCmd(const char* args) {
 void WgService::onInit() {
     int v = storageGetInt("s.wg.version", 0);
     if (v < WG_VERSION) {
+        storageBegin();
         storageDefaultTree("s.wg", R"({
             "enable": 0,
             "address": "",
@@ -180,6 +181,7 @@ void WgService::onInit() {
         })");
         storageDefault("secrets.wg.key", "");
         storageSet("s.wg.version", WG_VERSION);
+        storageEnd();
     }
 
     netRegister(NET_EV_UPSTREAM_UP,   wgOnUp);
@@ -192,8 +194,10 @@ void WgService::onInit() {
     char oldKey[48];
     storageGetStr("s.wg.key", oldKey, sizeof(oldKey));
     if (oldKey[0]) {
+        storageBegin();
         storageSet("secrets.wg.key", oldKey);
         storageUnset("s.wg.key");
+        storageEnd();
         info("migrated private key to secrets.wg.key\n");
     }
 
