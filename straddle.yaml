@@ -23,7 +23,7 @@ services:
 # s.wg.* keys use read-site fallbacks.
 settings:
   - at:
-      - { id: network, label: "Internet", order: 2 }
+      - { id: net }
       - { id: wireguard, label: "WireGuard", short: "WG" }
     rows:
       - switch: { label: "Enable", key: "s.wg.enable" }
@@ -34,8 +34,10 @@ settings:
       - slider: { label: "Keepalive", key: "s.wg.keepalive", min: 0, max: 300 }
       # The private key lives in secrets.* and is never synced, so wg.cpp
       # publishes the sentence about it rather than the value.
-      - value:  { label: "Private key", key: "wg.key_state" }
-      - value:  { label: "Public key", key: "s.wg.pubkey", copyable: true }
+      - info:
+          rows:
+            - value:  { label: "Private key", key: "wg.key_state" }
+            - value:  { label: "Public key", key: "s.wg.pubkey", copyable: true }
       - button:
           label: "Generate key"
           do:
@@ -44,7 +46,7 @@ settings:
               buttons:
                 - { label: "Cancel" }
                 - label: "Generate"
-                  danger: true
+                  color: red
                   do: { set: { key: "wg.keygen", value: "1", edge: true } }
       - section: "Other Side"
       - text:   { label: "IP or Name", key: "s.wg.endpoint" }

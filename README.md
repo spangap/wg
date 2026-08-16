@@ -79,7 +79,7 @@ driven entirely by `s.wg.enable` and net events.)
 
 ## Storage variables
 
-`wg` has no socket API — storage is the control surface. The **Settings → Internet →
+`wg` has no socket API — storage is the control surface. The **Settings → WiFi & Network →
 WireGuard** pane is generated from the `settings:` block in
 [`straddle.yaml`](straddle.yaml) on both surfaces. The keys below are seeded by `wgInit`
 and read by `wg.cpp`.

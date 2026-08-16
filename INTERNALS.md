@@ -132,7 +132,7 @@ are candidates for removal.
 
 ## 7. Settings UI
 
-**Settings → Internet → WireGuard**. The pane is generated from the `settings:` block in `straddle.yaml` — both surfaces and the
+**Settings → WiFi & Network → WireGuard**. The pane is generated from the `settings:` block in `straddle.yaml` — both surfaces and the
 storage defaults from that one source. It shows `s.wg.*` and the derived `s.wg.pubkey`
 (copyable), and for the private key only the "generated / not set" sentence `wg.cpp`
 publishes to `wg.key_state`, because `secrets.wg.key` is never sent to the browser.
