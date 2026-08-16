@@ -130,12 +130,12 @@ the matching public key. Keys are produced **only** by `wg keygen` (CLI) or the
 Both exist only for previously-flashed devices; a fresh install needs neither and they
 are candidates for removal.
 
-## 7. Browser UI
+## 7. Settings UI
 
-`browser/src/modules/wg.ts` registers `WireGuardPanel.vue` under
-**Settings → Network → WireGuard**. The panel reads `s.wg.*` and the derived
-`s.wg.pubkey`, offers a copy button for the public key and a Generate-Key button (which
-writes `wg.keygen=1`), and shows only a "generated / not set" indicator for the private
-key — `secrets.wg.key` is never sent to the browser. The LCD pane is generated from the
-`settings:` block in `straddle.yaml`; `web: false` there leaves the richer web panel to
-own the web leaf.
+**Settings → Internet → WireGuard**. The pane is generated from the `settings:` block in `straddle.yaml` — both surfaces and the
+storage defaults from that one source. It shows `s.wg.*` and the derived `s.wg.pubkey`
+(copyable), and for the private key only the "generated / not set" sentence `wg.cpp`
+publishes to `wg.key_state`, because `secrets.wg.key` is never sent to the browser.
+Generate Key is a confirmation dialog over an edge write to `wg.keygen`: the flag may be
+left set by an attempt that did not complete, and without the edge the next press would
+write the value the key already holds.

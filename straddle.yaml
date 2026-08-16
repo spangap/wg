@@ -7,7 +7,6 @@ name: spangap/wg
 prefix: wg
 version: 0.0.0
 firmware: esp-idf
-browser: browser
 platforms: [idf]
 requires:
   - spangap/spangap-net
@@ -18,32 +17,35 @@ requires:
 # time the straddle band runs.
 services:
   - { class: WgService, header: wg.h }
-# Browser auto-registration: the browser-half parallel to init:. When a
-# buildable with a browser half stages wg, spangap-inside imports registerWg
-# from wg/modules/wg into the generated straddles.gen.ts and injects the
-# file: dep — so the WireGuard pane appears under Settings → Network with no
-# consumer edit. Mirrors how wgInit() rides the firmware dispatcher.
-browser_register:
-  - call: registerWg
 
-# Declarative settings: LCD pane generated from this block. web: false — the
-# WireGuardPanel.vue (pubkey copy button, private-key-present indicator) keeps
-# owning the web leaf. No row carries a default: the private key lives in
-# secrets.wg.key (seeded in wg.cpp); the s.wg.* keys use read-site fallbacks.
+# Declarative settings: both surfaces generated from this block. No row carries
+# a default: the private key lives in secrets.wg.key (seeded in wg.cpp) and the
+# s.wg.* keys use read-site fallbacks.
 settings:
-  - menu:
-      - { id: network, label: "Internet", placement: 2 }
-      - { id: wireguard, label: "WireGuard" }
-    web: false
+  - at:
+      - { id: network, label: "Internet", order: 2 }
+      - { id: wireguard, label: "WireGuard", short: "WG" }
     rows:
-      - section: "Our Side"
       - switch: { label: "Enable", key: "s.wg.enable" }
-      - text:   { label: "Address", key: "s.wg.address" }
+      - section: "Our Side"
+      - text:   { label: "IP Address", key: "s.wg.address" }
       - text:   { label: "Netmask", key: "s.wg.netmask" }
       - text:   { label: "DNS", key: "s.wg.dns" }
       - slider: { label: "Keepalive", key: "s.wg.keepalive", min: 0, max: 300 }
-      - value:  { label: "Public key", key: "s.wg.pubkey" }
-      - button: { label: "Generate key", cmd: "wg.keygen", payload: "1" }
+      # The private key lives in secrets.* and is never synced, so wg.cpp
+      # publishes the sentence about it rather than the value.
+      - value:  { label: "Private key", key: "wg.key_state" }
+      - value:  { label: "Public key", key: "s.wg.pubkey", copyable: true }
+      - button:
+          label: "Generate key"
+          do:
+            dialog:
+              text: "Generate a new key pair? The current private key is replaced, and every peer configured with the old public key stops accepting this device until it is given the new one."
+              buttons:
+                - { label: "Cancel" }
+                - label: "Generate"
+                  danger: true
+                  do: { set: { key: "wg.keygen", value: "1", edge: true } }
       - section: "Other Side"
-      - text:   { label: "Endpoint", key: "s.wg.endpoint" }
-      - text:   { label: "Peer pub key", key: "s.wg.peer_pubkey" }
+      - text:   { label: "IP or Name", key: "s.wg.endpoint" }
+      - text:   { label: "Peer public key", key: "s.wg.peer_pubkey" }

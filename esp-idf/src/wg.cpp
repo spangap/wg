@@ -37,6 +37,7 @@ static char endpointHost[64];
 static int endpointPort = 51820;
 
 static bool derivePubKey(const char* privKeyB64, char* pubKeyB64, size_t pubKeyB64Len);
+static void wgPublishKeyState();
 
 static bool configValid() {
     storageGetStr("secrets.wg.key", privKey, sizeof(privKey));
@@ -210,6 +211,18 @@ void WgService::onInit() {
             storageSet("s.wg.pubkey", pub);
     }
 
+    /* The private key never leaves the device (it lives in secrets.*, which is
+     * not synced), so what a settings row can show about it is a sentence, not
+     * a value — and composing that sentence is ours, not the UI's. */
+    wgPublishKeyState();
+}
+
+/* Whether a key pair exists, as the words the settings row shows. Re-published
+ * on every change of the derived public key, which is the one thing that moves
+ * when a key is generated. */
+static void wgPublishKeyState() {
+    storageSet("wg.key_state",
+               storageGetStr("s.wg.pubkey", "").empty() ? "not set" : "generated");
 }
 
 bool wgIsUp() { return tunnelUp; }
@@ -260,6 +273,7 @@ void wgGenKey(cli_write_fn write) {
     char pub[48];
     if (derivePubKey(b64, pub, sizeof(pub))) {
         storageSet("s.wg.pubkey", pub);
+        wgPublishKeyState();
         if (write) {
             char buf[128];
             int n = snprintf(buf, sizeof(buf), "  public key: %s\n", pub);

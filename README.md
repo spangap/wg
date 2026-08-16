@@ -33,11 +33,10 @@ wg/
 │   └── src/
 │       ├── wg.cpp             config-from-storage, lifecycle, keygen, status
 │       └── esp_wireguard/     trombik/esp_wireguard, vendored + patched
-└── browser/
-    └── src/
-        ├── modules/wg.ts            self-registering settings module
-        └── panels/WireGuardPanel.vue  Settings → Network → WireGuard panel
 ```
+
+There is no browser half: the settings pane is described in `straddle.yaml` and the
+build lowers it to both surfaces.
 
 ## What it does
 
@@ -80,10 +79,10 @@ driven entirely by `s.wg.enable` and net events.)
 
 ## Storage variables
 
-`wg` has no socket API — storage is the control surface. The LCD **Settings → Network
-→ WireGuard** pane is generated from the `settings:` block in
-[`straddle.yaml`](straddle.yaml); the web panel is `WireGuardPanel.vue`. The keys
-below are seeded by `wgInit` and read by `wg.cpp`.
+`wg` has no socket API — storage is the control surface. The **Settings → Internet →
+WireGuard** pane is generated from the `settings:` block in
+[`straddle.yaml`](straddle.yaml) on both surfaces. The keys below are seeded by `wgInit`
+and read by `wg.cpp`.
 
 ### Settings (`s.wg.*`)
 
