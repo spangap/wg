@@ -12,6 +12,7 @@
 #include "cli.h"
 #include <cstring>
 #include <cstdio>
+#include <esp_random.h>
 #include <esp_timer.h>
 #include <esp_wireguard.h>
 
@@ -221,8 +222,18 @@ void WgService::onInit() {
  * on every change of the derived public key, which is the one thing that moves
  * when a key is generated. */
 static void wgPublishKeyState() {
-    storageSet("wg.key_state",
-               storageGetStr("s.wg.pubkey", "").empty() ? "not set" : "generated");
+    bool have = !storageGetStr("s.wg.pubkey", "").empty();
+    storageBegin();
+    storageSet("wg.key_state", have ? "generated" : "not set");
+    /* And the same fact as the two gates the settings pane needs. Generating
+     * over an existing key throws away every peer's idea of this device, and
+     * generating the first one throws away nothing — so those are two different
+     * buttons, and which one is on screen is ours to say. `when_key` tests
+     * truthiness and has no negation, which is why this is a pair and not a
+     * flag. */
+    storageSet("wg.haskey", have ? 1 : 0);
+    storageSet("wg.nokey",  have ? 0 : 1);
+    storageEnd();
 }
 
 bool wgIsUp() { return tunnelUp; }
@@ -263,7 +274,16 @@ void wgStatus(cli_write_fn write) {
 
 void wgGenKey(cli_write_fn write) {
     uint8_t key[32];
-    wireguard_random_bytes(key, 32);
+    /* The hardware RNG directly, NOT wireguard_random_bytes(): that one draws
+     * from a CTR-DRBG the vendored stack seeds in wireguard_platform_init(),
+     * which only runs inside esp_wireguard_init() — i.e. when the tunnel is
+     * brought up. Generating a key on a device that has never had WireGuard
+     * enabled therefore called an unseeded context, whose entropy callback is
+     * a null pointer, and the device panicked. No entropy is given up by going
+     * direct: that DRBG's only source is esp_fill_random, the same call this
+     * is. It is also what every other key in this tree is made of (sshd's host
+     * key, its user key). */
+    esp_fill_random(key, sizeof(key));
     key[0] &= 248;
     key[31] = (key[31] & 127) | 64;
     char b64[48];

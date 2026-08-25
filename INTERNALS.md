@@ -136,6 +136,11 @@ are candidates for removal.
 storage defaults from that one source. It shows `s.wg.*` and the derived `s.wg.pubkey`
 (copyable), and for the private key only the "generated / not set" sentence `wg.cpp`
 publishes to `wg.key_state`, because `secrets.wg.key` is never sent to the browser.
+The same fact goes out as the pair `wg.haskey` / `wg.nokey`, which is what puts
+ONE of the two Generate-key buttons on the pane: generating the first key
+destroys nothing and asks nothing, generating over an existing one locks this
+device out of every peer holding the old public key and stops to say so. A pair
+rather than a flag because `when_key` tests truthiness and has no negation.
 Generate Key is a confirmation dialog over an edge write to `wg.keygen`: the flag may be
 left set by an attempt that did not complete, and without the edge the next press would
 write the value the key already holds.

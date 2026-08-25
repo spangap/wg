@@ -93,7 +93,7 @@ and read by `wg.cpp`.
 | `s.wg.netmask` | `255.255.255.0` | Netmask for the tunnel address. |
 | `s.wg.endpoint` | `""` | Server host or `host:port`. Required. Port defaults to `51820` when omitted. |
 | `s.wg.peer_pubkey` | `""` | The server's base64 public key. Required. |
-| `s.wg.keepalive` | `25` | Persistent-keepalive interval in seconds (`0` = off). |
+| `s.wg.keepalive` | `25` | Persistent-keepalive interval in seconds (`0` = off); the pane offers 0-600. |
 
 ### Published / derived (read-only to the operator)
 

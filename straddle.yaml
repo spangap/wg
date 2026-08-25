@@ -24,20 +24,31 @@ services:
 settings:
   - at:
       - { id: net }
-      - { id: wireguard, label: "WireGuard", short: "WG" }
+      - { id: reachable }
+    order: 5
     rows:
-      - switch: { label: "Enable", key: "s.wg.enable" }
-      - section: "Our Side"
-      - text:   { label: "IP Address", key: "s.wg.address" }
-      - text:   { label: "Netmask", key: "s.wg.netmask" }
-      - text:   { label: "DNS", key: "s.wg.dns" }
-      - slider: { label: "Keepalive", key: "s.wg.keepalive", min: 0, max: 300 }
+      - heading: "WireGuard"
+      - caption: "If none of the above works, you can get a VPN subscription that lets you use the WireGuard protocol and get a reachable IP-number that way."
+      - switch: { label: "Enable WireGuard", key: "s.wg.enable" }
+      - section: "This Device"
+      - ipv4:   { label: "IP Address", key: "s.wg.address" }
+      - ipv4:   { label: "Netmask", key: "s.wg.netmask" }
+      - ipv4:   { label: "DNS server", key: "s.wg.dns" }
+      - integer: { label: "Keepalive", unit: "sec", key: "s.wg.keepalive", min: 0, max: 600 }
       # The private key lives in secrets.* and is never synced, so wg.cpp
       # publishes the sentence about it rather than the value.
       - info:
           rows:
             - value:  { label: "Private key", key: "wg.key_state" }
             - value:  { label: "Public key", key: "s.wg.pubkey", copyable: true }
+      # Two buttons, one on screen at a time: wg.cpp publishes which. Generating
+      # the FIRST key destroys nothing and needs no warning; generating over an
+      # existing one silently locks this device out of every peer that was given
+      # the old public key, and that is worth a stop.
+      - button:
+          label: "Generate key"
+          do: { set: { key: "wg.keygen", value: "1", edge: true } }
+        when_key: wg.nokey
       - button:
           label: "Generate key"
           do:
@@ -48,6 +59,7 @@ settings:
                 - label: "Generate"
                   color: red
                   do: { set: { key: "wg.keygen", value: "1", edge: true } }
-      - section: "Other Side"
+        when_key: wg.haskey
+      - section: "WireGuard Server"
       - text:   { label: "IP or Name", key: "s.wg.endpoint" }
       - text:   { label: "Peer public key", key: "s.wg.peer_pubkey" }

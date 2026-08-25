@@ -1,5 +1,6 @@
 #include "wireguard-platform.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 #include <inttypes.h>
@@ -28,9 +29,20 @@ static int entropy_hw_random_source( void *data, unsigned char *output, size_t l
 	return 0;
 }
 
+/* Once per boot. esp_wireguard_init() calls this on every connect, and a
+ * config change restarts the tunnel, so without the guard each restart
+ * re-initialised a live entropy context — resetting its source list and
+ * re-creating its mutex over the old one. A seeded DRBG is also not something
+ * to re-seed from scratch on every reconnect. */
+static bool s_inited = false;
+
 esp_err_t wireguard_platform_init() {
 	int mbedtls_err;
 	esp_err_t err;
+
+	if (s_inited) {
+		return ESP_OK;
+	}
 
 	mbedtls_entropy_init(&entropy_context);
 	mbedtls_ctr_drbg_init(&random_context);
@@ -57,6 +69,7 @@ esp_err_t wireguard_platform_init() {
 		goto fail;
 	}
 	err = ESP_OK;
+	s_inited = true;
 fail:
 	return err;
 }
