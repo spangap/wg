@@ -101,7 +101,7 @@ and read by `wg.cpp`.
 |---|---|
 | `s.wg.pubkey` | The device's own base64 public key, derived from `secrets.wg.key`. Published by `wgInit` and `wgGenKey`; this is the value you hand to the server's `[Peer] PublicKey`. |
 
-### Status & command sentinels
+### Status & command command keys
 
 | Key | Direction | Meaning |
 |---|---|---|
